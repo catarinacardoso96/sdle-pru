@@ -6,20 +6,23 @@ from fcntl import ioctl
 from struct import pack, unpack
 from array import array
 
-#-----------------------------------------------------------------------------------------#
-def hash_email():
-    #user_input = input('Insert email: ')
-    user_input = "pru@pru.pru"
-    print('Your email: %s' % (user_input))
+#----------------------------------------------------------------------------------#
+def hash_email(login_flag):
+    if login_flag:
+        #email = input('Insert email: ')
+        email = "pru@pru.pru"
+    #else:
+        #email = get email from DB
+    print('Your email: %s' % (email))
 
     # md5, sha1, sha224, sha256, sha384, sha512
-    hash_object = md5(user_input.encode())
+    hash_object = md5(email.encode())
 
     hash_string = hash_object.hexdigest()
     print('Your hash: %s' % (hash_string))
     return hash_string
 
-#-----------------------------------------------------------------------------------------#
+#----------------------------------------------------------------------------------#
 def get_ip():
     if ifaddresses('wlp2s0'):
         ip = ifaddresses('wlp2s0')[AF_INET][0]['addr']
@@ -32,7 +35,7 @@ def get_ip():
     print('Your ip: %s' % (ip))
     return ip
 
-#-----------------------------------------------------------------------------------------#
+#----------------------------------------------------------------------------------#
 def get_ip2(sock):
 
     #---------------------------------------------------------#
@@ -67,3 +70,8 @@ def get_ip2(sock):
 
     for i in ifs:
         print("%12s   %s" % (i[0].decode(), format_ip(i[1])))
+
+#----------------------------------------------------------------------------------#
+def first_login():
+    # check if this login is the 1st
+    return True

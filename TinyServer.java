@@ -6,10 +6,9 @@ class TinyServer {
         String fromClient;
         String toClient;
  
-        ServerSocket server = new ServerSocket(8080);
-        System.out.println("wait for connection on port 8080");
- 
+        ServerSocket server = new ServerSocket(8080); 
         boolean run = true;
+        
         while(run) {
 
             Socket client = server.accept();
@@ -23,10 +22,16 @@ class TinyServer {
             
             fromClient = in.readLine();
             System.out.println("received: " + fromClient);
+            
+            fromClient = in.readLine();
+            System.out.println("received: " + fromClient);
 
+            /*
             toClient = "Hello from server";
             System.out.println("sent hello");
-            out.println(toClient);
+            out.println(toClient);*/
+
+
         }
         System.exit(0);
     }
