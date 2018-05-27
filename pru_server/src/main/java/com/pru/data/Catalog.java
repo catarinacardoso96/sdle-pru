@@ -14,11 +14,12 @@ public class Catalog {
         onlinePeers = new HashMap<>();
     }
 
-    public void onlineUser() {
-        List<Entry> users = Util.getRandomPeers(onlinePeers);
+    public String onlineUser() {
+        String users = Util.getRandomPeers(onlinePeers);
+        return users;
     }
 
     public void offlineUser() {
-
+        //o que fazer aqui?
     }
 }
