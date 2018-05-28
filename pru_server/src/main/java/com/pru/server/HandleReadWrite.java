@@ -24,7 +24,6 @@ public class HandleReadWrite {
         buf.flip();
         while(buf.hasRemaining()) {
             byte c = buf.get();
-            System.out.print((char)c);
             if (c == '\n') {
                 line.flip();
                 byte b[] = new byte[line.remaining()];
@@ -45,7 +44,7 @@ public class HandleReadWrite {
 
             @Override
             public void completed(Integer result, Object attachment) {
-
+                read(r);
             }
 
             @Override
@@ -57,14 +56,14 @@ public class HandleReadWrite {
         return r;
     }
 
-    public CompletableFuture<String> write(String s) {
-        CompletableFuture<String> cf = new CompletableFuture<>();
+    public CompletableFuture<byte[]> write(String s) {
+        CompletableFuture<byte[]> cf = new CompletableFuture<>();
         sock.write(ByteBuffer.wrap(s.getBytes()),
                 null,
                 new CompletionHandler<Integer, Object>() {
                     @Override
                     public void completed(Integer result, Object attachment) {
-                        cf.complete(s);
+                        cf.complete(s.getBytes());
                     }
 
                     @Override

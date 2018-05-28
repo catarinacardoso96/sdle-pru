@@ -1,24 +1,25 @@
 package com.pru.data;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-
 public class Entry {
-    private String emailHash;
-    private String ipAddress;
+    private String ip;
+    private int port;
 
     public Entry(){
     }
 
-    public Entry(String emailHash, String ipAddress) {
-        this.emailHash = emailHash;
-        this.ipAddress = ipAddress;
+    public Entry(String ipAddress, int port) {
+        this.port = port;
+        this.ip = ipAddress;
     }
 
-    public void updateEntry(String fromUser){
-        //TODO
-        //PARSE DO JSON?
+    public String getIp(){
+        return this.ip;
     }
+
+    public int getPort() {
+        return this.port;
+    }
+
 
 
 }

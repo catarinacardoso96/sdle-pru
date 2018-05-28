@@ -19,8 +19,8 @@ public class Server {
         AsynchronousChannelGroup group;
         AsynchronousServerSocketChannel srv;
         InetSocketAddress addr;
-        String host = "localhost";
-        int portNumber = Integer.parseInt(args[0]);
+        String host = args[0];
+        int portNumber = Integer.parseInt(args[1]);
         Catalog catalog = new Catalog();
 
         try {
