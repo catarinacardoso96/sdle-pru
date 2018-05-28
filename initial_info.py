@@ -1,16 +1,16 @@
 import socket
-from hashlib import md5, sha1, sha224, sha256, sha384, sha512
-from netifaces import ifaddresses, AF_INET
+from hashlib import md5
+from netifaces import interfaces, ifaddresses, AF_INET
 
 from fcntl import ioctl
 from struct import pack, unpack
 from array import array
 
 #----------------------------------------------------------------------------------#
-def hash_email(login_flag):
+def hash_email(login_flag, in_email):
     if login_flag:
         #email = input('Insert email: ')
-        email = "pru@pru.pru"
+        email = in_email
     #else:
         #email = get email from DB
     print('Your email: %s' % (email))
@@ -23,18 +23,27 @@ def hash_email(login_flag):
     return hash_string
 
 #----------------------------------------------------------------------------------#
-def get_ip():
-    if ifaddresses('wlp2s0'):
-        ip = ifaddresses('wlp2s0')[AF_INET][0]['addr']
-    elif ifaddresses('wlp3s0'):
-        ip = ifaddresses('wlp3s0')[AF_INET][0]['addr']
-    elif ifaddresses('enp2s0'):
-        ip = ifaddresses('enp2s0')[AF_INET][0]['addr']
-    elif ifaddresses('enp3s0'):
-        ip = ifaddresses('enp3s0')[AF_INET][0]['addr']
+def get_ip(option):
+    '''
+    if option == 'wl':
+        if ifaddresses('wlp2s0'):
+            ip = ifaddresses('wlp2s0')[AF_INET][0]['addr']
+        elif ifaddresses('wlp3s0'):
+            ip = ifaddresses('wlp3s0')[AF_INET][0]['addr']
+
+    elif option == 'en':
+        if ifaddresses('enp2s0'):
+            ip = ifaddresses('enp2s0')[AF_INET][0]['addr']
+        elif ifaddresses('enp3s0'):
+            ip = ifaddresses('enp3s0')[AF_INET][0]['addr']
+    '''
+    for f in interfaces():
+        if f.startswith(option):
+            ip = ifaddresses(f)[AF_INET][0]['addr']
+
     print('Your ip: %s' % (ip))
     return ip
-
+'''
 #----------------------------------------------------------------------------------#
 def get_ip2(sock):
 
@@ -70,7 +79,7 @@ def get_ip2(sock):
 
     for i in ifs:
         print("%12s   %s" % (i[0].decode(), format_ip(i[1])))
-
+'''
 #----------------------------------------------------------------------------------#
 def first_login():
     # check if this login is the 1st

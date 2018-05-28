@@ -2,40 +2,42 @@ from ui import *
 from initial_info import *
 from timeline import *
 
-import sys
+from sys import argv, exit
 import threading
+import json
 
 #----------------------------------------------------------------------------------#
 class Peer():
 
     #---------------------------------------------------------#
     def __init__(self):
-        self.server = ("localhost", 8080)
+        self.server = ("10.0.0.2", 11111)
 
         self.login_flag = first_login()
-        self.e_hash = hash_email(self.login_flag)
-        self.ip = get_ip()
-        self.sock = self.connect_server()
-        #self.ip2 = get_ip2(self.sock)
-
-        # send hash and ip to server
+        self.e_hash = hash_email(self.login_flag, argv[3])
+        self.ip = get_ip(argv[2])
+        self.port = int(argv[1])
+        
+        self.peers = []
         self.initial_commit()
 
         self.user = User(self.login_flag)
-        self.background_app(int(sys.argv[1]))
+        #self.background_app(self.port)
         self.foreground_app()
 
     #---------------------------------------------------------#
-    def connect_server(self):
+    def send_to_server(self, msg):
         # AF_UNIX - same machine; AF_INET - IPv4; AF_INET6 - IPv6
         # TCP - SOCK_STREAM; UDP - SOCK_DGRAM
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect(self.server)
+        sock.send((msg+"\n").encode())
         return sock
 
     #---------------------------------------------------------#
-    def send_to_server(self, msg):
-        self.sock.send((msg+"\n").encode())
+    def disconnect_from_server(self, sock):
+        sock.shutdown(socket.SHUT_RDWR)
+        sock.close()
 
     #---------------------------------------------------------#
     def recv_msg(self, sock):
@@ -45,8 +47,17 @@ class Peer():
 
     #---------------------------------------------------------#
     def initial_commit(self):
-        self.send_to_server(self.e_hash)
-        self.send_to_server(self.ip)
+        j_str = json.dumps({"ip": self.ip, "port": self.port, "hash": self.e_hash})
+        sock = self.send_to_server(j_str)
+        peers = self.recv_msg(sock)
+        self.peers = json.loads(peers) # to access: self.peers[0]['ip'] - list of dict
+        self.disconnect_from_server(sock)
+
+    #---------------------------------------------------------#
+    def final_commit(self):
+        j_str = json.dumps({"hash": self.e_hash})
+        sock = self.send_to_server(j_str)
+        self.disconnect_from_server(sock)
 
     #---------------------------------------------------------#
     def background_app(self, port):
@@ -115,13 +126,16 @@ class Peer():
             elif option == 4:
                 answer = self.user.unfollow()
 
+        self.final_commit()
         self.user.save()
         print_pigeon()
-        sys.exit()
+        exit()
 
 #----------------------------------------------------------------------------------#
 def main():
     print_pigeon()
+    if len(argv) < 4:
+        print("Wrong input! port interface email")
     peer = Peer()
     
 if __name__ == "__main__":

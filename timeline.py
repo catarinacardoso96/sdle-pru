@@ -7,7 +7,7 @@ class User():
         self.login_flag = login_flag
 
         if login_flag:
-            self.followers, self.following, self.my_posts, self.others_posts = fetch_data()
+            self.following, self.my_posts, self.others_posts = fetch_data()
 
     #---------------------------------------------------------#
     def make_post(self):
@@ -16,10 +16,6 @@ class User():
         print('Your post: %s' % (user_input))
         # add post to my_posts
         return(user_input)
-
-    #---------------------------------------------------------#
-    def get_followers(self):
-        return self.followers
 
     #---------------------------------------------------------#
     def get_following(self):
@@ -49,64 +45,5 @@ class User():
 
     #---------------------------------------------------------#
     def save(self):
-        save_data(self.followers, self.following, self.my_posts, self.others_posts)
+        save_data(self.following, self.my_posts, self.others_posts)
 
-
-#----------------------------------------------------------------------------------#
-def fetch_data():
-
-    #---------------------------------------------------------#
-    def fetch_followers():
-        # fetch from disk
-        return 0
-
-    #---------------------------------------------------------#
-    def fetch_following():
-        # fetch from disk
-        return 0
-
-    #---------------------------------------------------------#
-    def fetch_my_posts():
-        # fetch from disk
-        return 0
-
-    #---------------------------------------------------------#
-    def fetch_others_posts():
-        # fetch from disk
-        return 0
-
-    followers = fetch_followers()
-    following = fetch_following()
-    my_posts = fetch_my_posts()
-    others_posts = fetch_others_posts()
-
-    return followers, following, my_posts, others_posts
-
-
-#----------------------------------------------------------------------------------#
-def save_data(followers, following, my_posts, others_posts):
-
-    #---------------------------------------------------------#
-    def save_followers(followers):
-        print()
-        # fetch to disk
-
-    #---------------------------------------------------------#
-    def save_following(following):
-        print()
-        # fetch to disk
-
-    #---------------------------------------------------------#
-    def save_my_posts(my_posts):
-        print()
-        # fetch to disk
-
-    #---------------------------------------------------------#
-    def save_others_posts(others_posts):
-        print()
-        # fetch to disk
-
-    save_followers(followers)
-    save_following(following)
-    save_my_posts(my_posts)
-    save_others_posts(others_posts)
