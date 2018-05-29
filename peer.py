@@ -28,7 +28,7 @@ class Peer():
         self.ip = get_ip(argv[2])
         self.port = int(argv[1])
         
-        self.peers = []
+        self.peers = {}
         self.sockets = []
         self.initial_commit()
 
@@ -76,9 +76,13 @@ class Peer():
     def connect_with_peer(self, peer):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((peer['ip'], peer['port']))
-        sock.send((str(peer)+"\n").encode())
-        peer['socket'] = sock
-        self.peers.append(peer)
+
+        myself = {"ip": self.ip, "port": self.port}
+        sock.send((json.dumps(myself)+"\n").encode())
+        
+        self.peers[(peer['ip'], peer['port'])] = sock
+
+        print(self.peers)
 
     #---------------------------------------------------------#
     def background_app(self):
@@ -103,11 +107,16 @@ class Peer():
             while True:
                 print("listening on: " + self.ip + ":" + str(self.port))
                 client_sock, _ = sock.accept()
-                #msg = self.recv_msg(client_sock)
-                #self.peers.append(msg)
-                #print(self.peers)
-                thread = threading.Thread(target=handle_peer, args=(client_sock,))
-                thread.start()
+                msg = self.recv_msg(client_sock)
+
+                j_str = json.loads(msg)
+                self.peers[(j_str['ip'], j_str['port'])] = client_sock
+
+                print(self.peers)
+
+                #self.send_posts(client_sock)
+                #thread = threading.Thread(target=handle_peer, args=(client_sock,))
+                #thread.start()
             sock.close()
 
         thread = threading.Thread(target=accept_peers)
@@ -119,9 +128,7 @@ class Peer():
         posts = self.user.my_posts + self.user.others_posts
         
         j_str = json.dumps(posts)
-        print("JSON" + j_str)
-        #self.send_to_server(j_str)
-        #self.recv_msg()
+        sock.send((j_str+"\n").encode())
 
     #---------------------------------------------------------#
     '''
@@ -139,7 +146,8 @@ class Peer():
 
             if option == 1:
                 post = self.user.make_post()
-                # send post to my followers
+                #for p in self.peers:
+                #    send_posts(self, sock)
 
             elif option == 2:
                 followers = self.user.followers

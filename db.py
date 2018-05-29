@@ -14,6 +14,10 @@ cat /var/log/mongodb/mongod.log
 def fetch_data(db):
 
     #---------------------------------------------------------#
+    def fetch_id():
+        return db.id.find_one()['id']
+
+    #---------------------------------------------------------#
     def fetch_email():
         return db.email.find_one()['email']
 
@@ -48,16 +52,22 @@ def fetch_data(db):
         return others_posts
 
     #---------------------------------------------------------#
+    id = fetch_id()
     email = fetch_email()
     following = fetch_following()
     my_posts = fetch_my_posts()
     others_posts = fetch_others_posts()
 
-    return email, following, my_posts, others_posts
+    return email, id, following, my_posts, others_posts
 
 
 #----------------------------------------------------------------------------------#
-def save_data(db, email, following, my_posts, others_posts):
+def save_data(db, email, id, following, my_posts, others_posts):
+
+    #---------------------------------------------------------#
+    def save_id(id):
+        if db.id.find().count() == 0:
+            db.id.insert(id)
 
     #---------------------------------------------------------#
     def save_email(email):
@@ -84,11 +94,11 @@ def save_data(db, email, following, my_posts, others_posts):
                 db.others_posts.insert_one(p)
 
     #---------------------------------------------------------#
+    save_id(id)
     save_email(email)
     save_following(following)
     save_my_posts(my_posts)
     save_others_posts(others_posts)
-
 
 
 #----------------------------------------------------------------------------------#

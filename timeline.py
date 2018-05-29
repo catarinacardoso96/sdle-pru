@@ -12,18 +12,20 @@ class User():
         print_info("1st login: " + str(self.login_flag))
 
         if self.login_flag:
+            self.id = 0
             self.following = []
             self.my_posts = []
-            self.others_posts = [] 
+            self.others_posts = []
 
         else:
-            self.email, self.following, \
+            self.email, self.id, self.following, \
             self.my_posts, self.others_posts = fetch_data(self.db)
 
     #---------------------------------------------------------#
     def make_post(self):
         text = get_user_input("Write New Post: ")
         post = {"from": self.email, \
+                "id": self.id, \
                 "date": datetime.now().strftime("%y/%m/%d %H:%M:%S"), \
                 "text": text}
 
@@ -62,5 +64,5 @@ class User():
         for f in self.following:
             d_following.append({"email": f})
 
-        save_data(self.db, d_email, d_following, \
+        save_data(self.db, d_email, self.id, d_following, \
                   self.my_posts, self.others_posts)
