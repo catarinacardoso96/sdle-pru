@@ -28,7 +28,7 @@ class User():
                 "id": self.id, \
                 "date": datetime.now().strftime("%y/%m/%d %H:%M:%S"), \
                 "text": text}
-
+        self.id += self.id
         self.my_posts.append(post)
         return post
 

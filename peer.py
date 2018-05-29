@@ -73,30 +73,34 @@ class Peer():
         self.disconnect_from_server(sock)
 
     #---------------------------------------------------------#
+    def handle_peer(self, client_sock):
+        while True:
+            print("wait for message")
+            data = self.recv_msg(client_sock)
+            self.send_posts(client_sock, self.get_posts(), data)
+            if not data:
+                break
+        client_sock.close()
+
+    #---------------------------------------------------------#
     def connect_with_peer(self, peer):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((peer['ip'], peer['port']))
 
-        myself = {"ip": self.ip, "port": self.port}
-        sock.send((json.dumps(myself)+"\n").encode())
+        j_str = json.dumps({"ip": self.ip, "port": self.port})
+        sock.send((j_str).encode())
         
         self.peers[(peer['ip'], peer['port'])] = sock
 
-        print(self.peers)
+        thread = threading.Thread(target=self.handle_peer, args=(sock,))
+        thread.daemon = True
+        thread.start()
 
     #---------------------------------------------------------#
     def background_app(self):
 
         #-----------------------------------------------------#
         def accept_peers():
-            
-            #-------------------------------------------------#
-            def handle_peer(client_sock):
-                while True:
-                    print("wait for message")
-                    data = self.recv_msg(client_sock)
-                    self.send_posts(client_sock)
-                client_sock.close()
             
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.bind((self.ip, self.port))
@@ -108,15 +112,12 @@ class Peer():
                 print("listening on: " + self.ip + ":" + str(self.port))
                 client_sock, _ = sock.accept()
                 msg = self.recv_msg(client_sock)
-
                 j_str = json.loads(msg)
                 self.peers[(j_str['ip'], j_str['port'])] = client_sock
 
-                print(self.peers)
-
-                #self.send_posts(client_sock)
-                #thread = threading.Thread(target=handle_peer, args=(client_sock,))
-                #thread.start()
+                thread = threading.Thread(target=self.handle_peer, args=(client_sock,))
+                thread.daemon = True
+                thread.start()
             sock.close()
 
         thread = threading.Thread(target=accept_peers)
@@ -124,11 +125,21 @@ class Peer():
         thread.start()
 
     #---------------------------------------------------------#
-    def send_posts(self, sock):
-        posts = self.user.my_posts + self.user.others_posts
-        
-        j_str = json.dumps(posts)
-        sock.send((j_str+"\n").encode())
+    def get_posts(self):
+        return self.user.my_posts + self.user.others_posts
+
+    #---------------------------------------------------------#
+    def send_posts(self, sock, posts, previous_posts):
+        #posts lista
+        if not previous_posts:
+            j_str = json.dumps(posts)
+            sock.send((j_str+"\n").encode())
+        else:
+            for pp in previous_posts:
+                if pp in posts:
+                    posts.remove(pp)
+            j_str = json.dumps(posts)
+            sock.send((j_str+"\n").encode())
 
     #---------------------------------------------------------#
     '''
@@ -138,6 +149,12 @@ class Peer():
         msg = make_post()
         sock.sendto((msg+"\n").encode(), ("localhost", 7070)) 
     '''
+
+    #---------------------------------------------------------#
+    def close_peers(self):
+        for p in self.peers.values():
+            p.close()
+
     #---------------------------------------------------------#
     def foreground_app(self):
         option = -1
@@ -146,8 +163,8 @@ class Peer():
 
             if option == 1:
                 post = self.user.make_post()
-                #for p in self.peers:
-                #    send_posts(self, sock)
+                for p in self.peers.values():
+                    self.send_posts(p, [post], None)
 
             elif option == 2:
                 followers = self.user.followers
@@ -168,6 +185,7 @@ class Peer():
 
         self.final_commit()
         #self.user.save()
+        self.close_peers()
         print_pigeon()
 
 #----------------------------------------------------------------------------------#
