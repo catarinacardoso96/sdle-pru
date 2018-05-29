@@ -11,7 +11,7 @@ cat /var/log/mongodb/mongod.log
 '''
 
 #----------------------------------------------------------------------------------#
-def fetch_data():
+def fetch_data(db):
 
     #---------------------------------------------------------#
     def fetch_email():
@@ -32,23 +32,22 @@ def fetch_data():
         my_posts = []
 
         for p in db.my_posts.find():
-            my_posts.append(p)
-            #my_posts.append({p['from'], p['date'], p['text']})
-
+            my_posts.append({"from": p['from'],\
+                             "date": p['date'],\
+                             "text": p['text']})
         return my_posts
 
-    #-------------*--------------------------------------------#
+    #---------------------------------------------------------#
     def fetch_others_posts():
         others_posts = []
 
         for p in db.others_posts.find():
-            others_posts.append(p)
-            #others_posts.append({p['from'], p['date'], p['text']})
-
+            others_posts.append({"from": p['from'],\
+                                 "date": p['date'],\
+                                 "text": p['text']})
         return others_posts
 
-
-    db = connect_db()
+    #---------------------------------------------------------#
     email = fetch_email()
     following = fetch_following()
     my_posts = fetch_my_posts()
@@ -58,7 +57,7 @@ def fetch_data():
 
 
 #----------------------------------------------------------------------------------#
-def save_data(email, following, my_posts, others_posts):
+def save_data(db, email, following, my_posts, others_posts):
 
     #---------------------------------------------------------#
     def save_email(email):
@@ -84,27 +83,38 @@ def save_data(email, following, my_posts, others_posts):
             if db.others_posts.find(p).count() == 0:
                 db.others_posts.insert_one(p)
 
-    db = connect_db()
+    #---------------------------------------------------------#
     save_email(email)
     save_following(following)
     save_my_posts(my_posts)
     save_others_posts(others_posts)
 
+
+
 #----------------------------------------------------------------------------------#
 def first_login():
     client = MongoClient('localhost', 27017)
+    db = client['pru-user']
+
     names = client.database_names()
     if 'pru-user' in names:
-        return False
+        return False, db
     else:
-        return True
-
-#----------------------------------------------------------------------------------#
-def connect_db():
-    client = MongoClient('localhost', 27017)
-    return client['pru-user']
+        return True, db
 
 #----------------------------------------------------------------------------------#
 def drop_db():
     client = MongoClient('localhost', 27017)
     client.drop_database('pru-user')
+
+'''
+from pymongo import MongoClient
+client = MongoClient('localhost', 27017)
+db = client['pru-user']
+for p in db.followers.find():
+    print(p)
+
+
+client.database_names()
+client.drop_database('pru-user')
+'''

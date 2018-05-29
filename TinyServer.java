@@ -21,7 +21,7 @@ class TinyServer {
             System.out.println("received: " + fromClient);
         
             System.out.println("sent hello");
-            out.println("[{\"ip\":\"123\",\"port\":78},{\"ip\":\"456\",\"port\":90}]");
+            out.println("[{\"ip\":\"172.26.57.140\",\"port\":5050},{\"ip\":\"172.26.57.140\",\"port\":4040}]");
 
         }
         System.exit(0);

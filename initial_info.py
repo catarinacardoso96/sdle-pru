@@ -1,10 +1,6 @@
-import socket
+from ui import print_info
 from hashlib import md5
 from netifaces import interfaces, ifaddresses, AF_INET
-
-from fcntl import ioctl
-from struct import pack, unpack
-from array import array
 
 #----------------------------------------------------------------------------------#
 def hash_email(email):
@@ -12,7 +8,7 @@ def hash_email(email):
     hash_object = md5(email.encode())
 
     hash_string = hash_object.hexdigest()
-    print('Your hash: %s' % (hash_string))
+    print_info("Your hash: " + hash_string)
     return hash_string
 
 #----------------------------------------------------------------------------------#
@@ -21,9 +17,14 @@ def get_ip(option):
         if f.startswith(option):
             ip = ifaddresses(f)[AF_INET][0]['addr']
 
-    print('Your ip: %s' % (ip))
+    print_info("Your ip: " + ip)
     return ip
+
 '''
+from fcntl import ioctl
+from struct import pack, unpack
+from array import array
+
 #----------------------------------------------------------------------------------#
 def get_ip2(sock):
 

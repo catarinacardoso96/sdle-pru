@@ -3,6 +3,7 @@ from initial_info import *
 from timeline import *
 
 from sys import argv, exit
+import socket
 import threading
 import json
 
@@ -16,6 +17,7 @@ class Peer():
 
         if (login_flag):
             email = argv[3]
+            self.user.email = email
         else:
             email = self.user.email
 
@@ -27,9 +29,10 @@ class Peer():
         self.port = int(argv[1])
         
         self.peers = []
+        self.sockets = []
         self.initial_commit()
 
-        #self.background_app(self.port)
+        #self.background_app()
         self.foreground_app()
 
     #---------------------------------------------------------#
@@ -58,7 +61,10 @@ class Peer():
         sock = self.send_to_server(j_str)
         peers = self.recv_msg(sock)
         self.disconnect_from_server(sock)
-        self.peers = json.loads(peers) # to access: self.peers[0]['ip'] - list of dict
+        peers = json.loads(peers)
+
+        for p in peers:
+            self.connect_with_peer(p)
 
     #---------------------------------------------------------#
     def final_commit(self):
@@ -67,11 +73,19 @@ class Peer():
         self.disconnect_from_server(sock)
 
     #---------------------------------------------------------#
-    def background_app(self, port):
+    def connect_with_peer(self, peer):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((peer['ip'], peer['port']))
+        peer['socket'] = sock
+        sock.send((str(peer)+"\n").encode())
+        self.peers.append(peer)
+
+    #---------------------------------------------------------#
+    def background_app(self):
 
         #-----------------------------------------------------#
-        def accept_peers(port):
-
+        def accept_peers():
+            '''
             #-------------------------------------------------#
             def handle_peer(client_sock):
                 while True:
@@ -79,26 +93,29 @@ class Peer():
                     data = self.recv_msg(client_sock)
                     if not data: break
                     print('Sending: ' + data)
+                    #get posts from 
                     client_sock.send(data.encode())
                 client_sock.close()
-
-
+            '''
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.bind(("localhost", port))
+            sock.bind((self.ip, self.port))
             sock.listen(5)
             # argument specifies the maximum number of queued connections and
             # should be at least 0, the maximum value is system-dependent (usually 5)
-            #print("waiting for connection on port " + str(port))
 
             while True:
-                client_sock, _ = sock.accept()
-                print("got connection on port " + str(port)\
-                      + " from port " + str(client_sock.getsockname()[1]))
-                thread = threading.Thread(target=handle_peer, args=(client_sock,))
-                thread.start()
+                print("listening on: " + self.ip + ":" + str(self.port))
+                client_sock, address = sock.accept()
+                print("got connection on port " + str(self.port))
+
+                msg = self.recv_msg(client_sock)
+                print(client_sock)
+                self.peers.append(msg)
+                #thread = threading.Thread(target=handle_peer, args=(client_sock,))
+                #thread.start()
             sock.close()
 
-        thread = threading.Thread(target=accept_peers, args=(port,))
+        thread = threading.Thread(target=accept_peers)
         thread.daemon = True
         thread.start()
 
@@ -121,28 +138,33 @@ class Peer():
                 # send post to my followers
 
             elif option == 2:
-                followers = self.user.get_followers()
+                followers = self.user.followers
                 # fetch new posts from followers
-                print_timeline()
+                #print_timeline()
 
             elif option == 3:
-                answer, email = self.user.follow()
-                #if answer:
-                    # fetch new posts from email
+                print_timeline(self.user.my_posts)
 
             elif option == 4:
-                answer = self.user.unfollow()
+                answer, email = self.user.follow()
+                if answer:
+                    print()
+                    # fetch new posts from email
+
+            elif option == 5:
+                self.user.unfollow()
 
         self.final_commit()
-        self.user.save()
+        #self.user.save()
         print_pigeon()
-        exit()
 
 #----------------------------------------------------------------------------------#
 def main():
-    print_pigeon()
     if len(argv) < 4:
-        print("Wrong input! port interface email")
+        print("Wrong input!\npython file.py port interface email")
+
+    print_pigeon()
+
     peer = Peer()
     
 if __name__ == "__main__":

@@ -25,9 +25,10 @@ def print_pigeon():
 def print_options():
     print("Choose your option:")
     print("1. Post")
-    print("2. Update Timeline")
-    print("3. Follow")
-    print("4. Unfollow")
+    print("2. List Timeline")
+    print("3. List my Timeline")
+    print("4. Follow")
+    print("5. Unfollow")
     print("0. Exit")
 
 #----------------------------------------------------------------------------------#
@@ -37,6 +38,16 @@ def select_action():
     return int(user_input)
 
 #----------------------------------------------------------------------------------#
-def print_timeline():
-    post = "Pru!"
-    print('Your posts: %s' % (post))
+def print_timeline(posts):
+    for p in posts:
+        print('From: %s\nAt: %s\n\t%s\n' %\
+             (p['from'], p['date'].strftime("%y/%m/%d %H:%M:%S"), p['text']))
+
+#----------------------------------------------------------------------------------#
+def print_info(msg):
+    print('Info\t%s' % (msg))
+
+#----------------------------------------------------------------------------------#
+def get_user_input(msg):
+    return "pru@pru.pru"
+    #return input('%s: ' % (msg))
