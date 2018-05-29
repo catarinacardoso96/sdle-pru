@@ -21,8 +21,8 @@ class Peer():
         else:
             email = self.user.email
 
-        #self.server = ("10.0.0.2", 11111)
-        self.server = ("localhost", 8080)
+        self.server = ("10.0.0.2", 11111)
+        #self.server = ("localhost", 8080)
         
         self.e_hash = hash_email(email)
         self.ip = get_ip(argv[2])
@@ -32,7 +32,7 @@ class Peer():
         self.sockets = []
         self.initial_commit()
 
-        #self.background_app()
+        self.background_app()
         self.foreground_app()
 
     #---------------------------------------------------------#
@@ -76,8 +76,8 @@ class Peer():
     def connect_with_peer(self, peer):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((peer['ip'], peer['port']))
-        peer['socket'] = sock
         sock.send((str(peer)+"\n").encode())
+        peer['socket'] = sock
         self.peers.append(peer)
 
     #---------------------------------------------------------#
@@ -85,18 +85,15 @@ class Peer():
 
         #-----------------------------------------------------#
         def accept_peers():
-            '''
+            
             #-------------------------------------------------#
             def handle_peer(client_sock):
                 while True:
                     print("wait for message")
                     data = self.recv_msg(client_sock)
-                    if not data: break
-                    print('Sending: ' + data)
-                    #get posts from 
-                    client_sock.send(data.encode())
+                    self.send_posts(client_sock)
                 client_sock.close()
-            '''
+            
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.bind((self.ip, self.port))
             sock.listen(5)
@@ -105,19 +102,26 @@ class Peer():
 
             while True:
                 print("listening on: " + self.ip + ":" + str(self.port))
-                client_sock, address = sock.accept()
-                print("got connection on port " + str(self.port))
-
-                msg = self.recv_msg(client_sock)
-                print(client_sock)
-                self.peers.append(msg)
-                #thread = threading.Thread(target=handle_peer, args=(client_sock,))
-                #thread.start()
+                client_sock, _ = sock.accept()
+                #msg = self.recv_msg(client_sock)
+                #self.peers.append(msg)
+                #print(self.peers)
+                thread = threading.Thread(target=handle_peer, args=(client_sock,))
+                thread.start()
             sock.close()
 
         thread = threading.Thread(target=accept_peers)
         thread.daemon = True
         thread.start()
+
+    #---------------------------------------------------------#
+    def send_posts(self, sock):
+        posts = self.user.my_posts + self.user.others_posts
+        
+        j_str = json.dumps(posts)
+        print("JSON" + j_str)
+        #self.send_to_server(j_str)
+        #self.recv_msg()
 
     #---------------------------------------------------------#
     '''

@@ -7,7 +7,8 @@ class User():
 
     #---------------------------------------------------------#
     def __init__(self):
-        self.login_flag, self.db = first_login()
+        #self.login_flag, self.db = first_login()
+        self.login_flag = True
         print_info("1st login: " + str(self.login_flag))
 
         if self.login_flag:
@@ -23,7 +24,7 @@ class User():
     def make_post(self):
         text = get_user_input("Write New Post: ")
         post = {"from": self.email, \
-                "date": datetime.now(), \
+                "date": datetime.now().strftime("%y/%m/%d %H:%M:%S"), \
                 "text": text}
 
         self.my_posts.append(post)

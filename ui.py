@@ -34,14 +34,16 @@ def print_options():
 #----------------------------------------------------------------------------------#
 def select_action():
     print_options()
-    user_input = input('Insert option: ')
+    #user_input = input('Insert option: ')
+    user_input = input('')
     return int(user_input)
 
 #----------------------------------------------------------------------------------#
 def print_timeline(posts):
     for p in posts:
         print('From: %s\nAt: %s\n\t%s\n' %\
-             (p['from'], p['date'].strftime("%y/%m/%d %H:%M:%S"), p['text']))
+             #(p['from'], p['date'].strftime("%y/%m/%d %H:%M:%S"), p['text']))
+             (p['from'], p['date'], p['text']))
 
 #----------------------------------------------------------------------------------#
 def print_info(msg):
