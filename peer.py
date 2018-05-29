@@ -11,17 +11,24 @@ class Peer():
 
     #---------------------------------------------------------#
     def __init__(self):
-        self.server = ("10.0.0.2", 11111)
+        self.user = User()
+        login_flag = self.user.login_flag
 
-        self.login_flag = first_login()
-        self.e_hash = hash_email(self.login_flag, argv[3])
+        if (login_flag):
+            email = argv[3]
+        else:
+            email = self.user.email
+
+        #self.server = ("10.0.0.2", 11111)
+        self.server = ("localhost", 8080)
+        
+        self.e_hash = hash_email(email)
         self.ip = get_ip(argv[2])
         self.port = int(argv[1])
         
         self.peers = []
         self.initial_commit()
 
-        self.user = User(self.login_flag)
         #self.background_app(self.port)
         self.foreground_app()
 
@@ -35,23 +42,23 @@ class Peer():
         return sock
 
     #---------------------------------------------------------#
-    def disconnect_from_server(self, sock):
-        sock.shutdown(socket.SHUT_RDWR)
-        sock.close()
-
-    #---------------------------------------------------------#
     def recv_msg(self, sock):
         data = sock.recv(1024).decode()
         print('Message: %s' % (data))
         return data
 
     #---------------------------------------------------------#
+    def disconnect_from_server(self, sock):
+        sock.shutdown(socket.SHUT_RDWR)
+        sock.close()
+
+    #---------------------------------------------------------#
     def initial_commit(self):
         j_str = json.dumps({"ip": self.ip, "port": self.port, "hash": self.e_hash})
         sock = self.send_to_server(j_str)
         peers = self.recv_msg(sock)
-        self.peers = json.loads(peers) # to access: self.peers[0]['ip'] - list of dict
         self.disconnect_from_server(sock)
+        self.peers = json.loads(peers) # to access: self.peers[0]['ip'] - list of dict
 
     #---------------------------------------------------------#
     def final_commit(self):

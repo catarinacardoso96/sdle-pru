@@ -1,13 +1,21 @@
+from db import *
+import json
 
 #----------------------------------------------------------------------------------#
 class User():
 
     #---------------------------------------------------------#
-    def __init__(self, login_flag):
-        self.login_flag = login_flag
+    def __init__(self):
+        self.login_flag = first_login()
+        print('1st login: %s' % (self.login_flag))
 
-        if login_flag:
-            self.following, self.my_posts, self.others_posts = fetch_data()
+        if self.login_flag:
+            self.following = {}
+            self.my_posts = {}
+            self.others_posts = {}        
+        else:
+            self.email, self.following, \
+            self.my_posts, self.others_posts = fetch_data()
 
     #---------------------------------------------------------#
     def make_post(self):
@@ -45,5 +53,6 @@ class User():
 
     #---------------------------------------------------------#
     def save(self):
-        save_data(self.following, self.my_posts, self.others_posts)
-
+        d_email = {"email": self.email}
+        save_data(d_email, self.following, \
+                  self.my_posts, self.others_posts)

@@ -7,14 +7,7 @@ from struct import pack, unpack
 from array import array
 
 #----------------------------------------------------------------------------------#
-def hash_email(login_flag, in_email):
-    if login_flag:
-        #email = input('Insert email: ')
-        email = in_email
-    #else:
-        #email = get email from DB
-    print('Your email: %s' % (email))
-
+def hash_email(email):
     # md5, sha1, sha224, sha256, sha384, sha512
     hash_object = md5(email.encode())
 
@@ -24,19 +17,6 @@ def hash_email(login_flag, in_email):
 
 #----------------------------------------------------------------------------------#
 def get_ip(option):
-    '''
-    if option == 'wl':
-        if ifaddresses('wlp2s0'):
-            ip = ifaddresses('wlp2s0')[AF_INET][0]['addr']
-        elif ifaddresses('wlp3s0'):
-            ip = ifaddresses('wlp3s0')[AF_INET][0]['addr']
-
-    elif option == 'en':
-        if ifaddresses('enp2s0'):
-            ip = ifaddresses('enp2s0')[AF_INET][0]['addr']
-        elif ifaddresses('enp3s0'):
-            ip = ifaddresses('enp3s0')[AF_INET][0]['addr']
-    '''
     for f in interfaces():
         if f.startswith(option):
             ip = ifaddresses(f)[AF_INET][0]['addr']
@@ -80,7 +60,3 @@ def get_ip2(sock):
     for i in ifs:
         print("%12s   %s" % (i[0].decode(), format_ip(i[1])))
 '''
-#----------------------------------------------------------------------------------#
-def first_login():
-    # check if this login is the 1st
-    return True

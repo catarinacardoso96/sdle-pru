@@ -19,18 +19,9 @@ class TinyServer {
             
             fromClient = in.readLine();
             System.out.println("received: " + fromClient);
-            
-            fromClient = in.readLine();
-            System.out.println("received: " + fromClient);
-            
-            fromClient = in.readLine();
-            System.out.println("received: " + fromClient);
-
-            /*
-            toClient = "Hello from server";
+        
             System.out.println("sent hello");
-            out.println(toClient);*/
-
+            out.println("[{\"ip\":\"123\",\"port\":78},{\"ip\":\"456\",\"port\":90}]");
 
         }
         System.exit(0);
