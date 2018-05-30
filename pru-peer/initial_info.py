@@ -8,7 +8,7 @@ def hash_email(email):
     hash_object = md5(email.encode())
 
     hash_string = hash_object.hexdigest()
-    print_info("Your hash: " + hash_string)
+    #print_info("Your hash: " + hash_string)
     return hash_string
 
 #----------------------------------------------------------------------------------#
@@ -17,7 +17,7 @@ def get_ip(option):
         if f.startswith(option):
             ip = ifaddresses(f)[AF_INET][0]['addr']
 
-    print_info("Your ip: " + ip)
+    #print_info("Your ip: " + ip)
     return ip
 
 '''

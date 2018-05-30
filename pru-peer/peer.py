@@ -48,7 +48,7 @@ class Peer():
     #---------------------------------------------------------#
     def recv_msg(self, sock):
         data = sock.recv(1024).decode()
-        print('Message: %s' % (data))
+        #print('Message: %s' % (data))
         return data
 
     #---------------------------------------------------------#
@@ -76,7 +76,7 @@ class Peer():
     #---------------------------------------------------------#
     def handle_peer(self, client_sock):
         while True:
-            print("wait for message")
+            #print("wait for message")
             data = self.recv_msg(client_sock)
             if not data:
                 break
@@ -232,7 +232,7 @@ class Peer():
             # should be at least 0, the maximum value is system-dependent (usually 5)
 
             while True:
-                print("listening on: " + self.ip + ":" + str(self.port))
+                #print("listening on: " + self.ip + ":" + str(self.port))
                 client_sock, _ = sock.accept()
 
                 if len(self.peers) > 10:
