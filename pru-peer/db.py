@@ -36,6 +36,7 @@ def fetch_data(db):
 
         for p in db.my_posts.find():
             my_posts.append({"from": p['from'],\
+                             "id": p['id'],\
                              "date": p['date'],\
                              "text": p['text']})
         return my_posts
@@ -46,6 +47,7 @@ def fetch_data(db):
 
         for p in db.others_posts.find():
             others_posts.append({"from": p['from'],\
+                                 "id": p['id'],\
                                  "date": p['date'],\
                                  "text": p['text']})
         return others_posts
