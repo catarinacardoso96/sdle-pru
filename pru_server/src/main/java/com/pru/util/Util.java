@@ -10,25 +10,26 @@ public class Util {
 
     public static String getRandomPeers(String senderPeer, Map<String, Entry> onlineUsers) {
         Gson gson = new Gson();
+        int maximumConns = 3;
+        if(onlineUsers.size() - 1 <= maximumConns){
+            maximumConns = onlineUsers.size()-1;
+        }
         Set<Entry> usersToConnect = new HashSet<>();
         List<String> users = new ArrayList<>(onlineUsers.keySet());
         users.remove(senderPeer);
         if(users.size() == 0){
-            return gson.toJson("USERS ONLINE NOT FOUNDED");
+            return gson.toJson("");
         }
         int sizeOn = users.size();
-        int anotherUser = -1;
-        int userToConnect = new Random().nextInt(sizeOn);
-        Entry firstUser = onlineUsers.get(users.get(userToConnect));
-        users.remove(users.get(userToConnect));
-        Entry secondUser;
-        if(sizeOn > 1){
-            anotherUser = new Random().nextInt(sizeOn);
-            secondUser = onlineUsers.get(users.get(anotherUser));
-            users.remove(users.get(anotherUser));
-            usersToConnect.add(secondUser);
+        int userToConnect;
+        while(maximumConns > 0){
+            userToConnect = new Random().nextInt(sizeOn);
+            Entry firstUser = onlineUsers.get(users.get(userToConnect));
+            users.remove(users.get(userToConnect));
+            usersToConnect.add(firstUser);
+            sizeOn--;
+            maximumConns--;
         }
-        usersToConnect.add(firstUser);
 
         String jsonToSend = gson.toJson(usersToConnect);
 
